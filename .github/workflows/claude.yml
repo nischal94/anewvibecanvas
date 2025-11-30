@@ -18,25 +18,6 @@ jobs:
       steps:
         - uses: actions/checkout@v4
 
-        - name: Run Claude Code Action
-          id: claude
-          uses: anthropics/claude-code-action@v1
-          with: anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-        - name: Create Pull Request
-          if: success()
-          env:
-            GH_TOKEN: ${{ github.token }}
-          run: |
-            BRANCH=$(git branch --show-current)
-            if [[ $BRANCH == claude/* ]]; then
-              PR=$(gh pr list --head "$BRANCH" --json number -q'.[0].number')
-              if [ -z "$PR" ]; then
-                gh pr create \
-                  --base main \
-                  --head "$BRANCH" \
-                  --title "Claude: $BRANCH" \
-                  --body "Auto-created" \
-                  --label "claude" || true
-              fi
-            fi
+        - uses: anthropics/claude-code-action@v1
+          with:
+            anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
