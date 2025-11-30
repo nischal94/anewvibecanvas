@@ -18,6 +18,40 @@ jobs:
       steps:
         - uses: actions/checkout@v4
 
-        - uses: anthropics/claude-code-action@v1
+        - name: Run Claude Code Action
+          id: claude
+          uses: anthropics/claude-code-action@v1
           with:
             anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+        - name: Create Pull Request (if branch was created)
+          if: success()
+          env:
+            GH_TOKEN: ${{ github.token }}
+          run: |
+            # Get the current branch name
+            CURRENT_BRANCH=$(git branch --show-current)
+
+            # Only create PR if we're on a claude/* branch
+            if [[ $CURRENT_BRANCH == claude/* ]]; then
+              # Check if PR already exists
+              EXISTING_PR=$(gh pr list --head "$CURRENT_BRANCH" --json
+  number --jq '.[0].number')
+
+              if [ -z "$EXISTING_PR" ]; then
+                # Create PR
+                gh pr create \
+                  --base main \
+                  --head "$CURRENT_BRANCH" \
+                  --title "Auto-PR: $CURRENT_BRANCH" \
+                  --body "This PR was automatically created by Claude Code 
+  Action.
+                  
+                  See the related issue for details." \
+                  --label "claude" || echo "PR creation skipped or failed"
+              else
+                echo "PR already exists: #$EXISTING_PR"
+              fi
+            else
+              echo "Not on a claude branch, skipping PR creation"
+            fi
