@@ -1,6 +1,6 @@
 name: Claude Code
 
-on:
+  on:
     issue_comment:
       types: [created]
     pull_request_review_comment:
@@ -29,13 +29,16 @@ jobs:
           env:
             GH_TOKEN: ${{ github.token }}
           run: |
-            CURRENT_BRANCH=$(git branch --show-current)
-            if [[ $CURRENT_BRANCH == claude/* ]]; then
-              EXISTING_PR=$(gh pr list --head "$CURRENT_BRANCH" --json 
-  number --jq '.[0].number')
-              if [ -z "$EXISTING_PR" ]; then
-                gh pr create --base main --head "$CURRENT_BRANCH" --title 
-  "Claude: $CURRENT_BRANCH" --body "Auto-created by Claude Code" --label 
-  "claude" || echo "PR creation skipped"
+            BRANCH=$(git branch --show-current)
+            if [[ $BRANCH == claude/* ]]; then
+              PR=$(gh pr list --head "$BRANCH" --json number -q 
+  '.[0].number')
+              if [ -z "$PR" ]; then
+                gh pr create \
+                  --base main \
+                  --head "$BRANCH" \
+                  --title "Claude: $BRANCH" \
+                  --body "Auto-created" \
+                  --label "claude" || true
               fi
             fi
