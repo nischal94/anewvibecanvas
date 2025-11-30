@@ -1,0 +1,19 @@
+.hello-world {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.hello-world h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.hello-world p {
+  font-size: 1.2rem;
+  color: #666;
+}
