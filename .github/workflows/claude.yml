@@ -1,6 +1,6 @@
 name: Claude Code
 
-  on:
+on:
     issue_comment:
       types: [created]
     pull_request_review_comment:
@@ -21,8 +21,7 @@ jobs:
         - name: Run Claude Code Action
           id: claude
           uses: anthropics/claude-code-action@v1
-          with:
-            anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          with: anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
         - name: Create Pull Request
           if: success()
@@ -31,8 +30,7 @@ jobs:
           run: |
             BRANCH=$(git branch --show-current)
             if [[ $BRANCH == claude/* ]]; then
-              PR=$(gh pr list --head "$BRANCH" --json number -q 
-  '.[0].number')
+              PR=$(gh pr list --head "$BRANCH" --json number -q'.[0].number')
               if [ -z "$PR" ]; then
                 gh pr create \
                   --base main \
